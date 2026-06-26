@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #402970;
+  --color-brand-light: #5d3f9e;
+  --color-brand-glow: rgba(93, 63, 158, 0.4);
+  --color-accent: #f8da08;
+  --color-accent-glow: rgba(248, 218, 8, 0.2);
+  --color-bg-primary: #120e1c;
+  --color-bg-secondary: rgba(255, 255, 255, 0.03);
+  --color-bg-tertiary: rgba(255, 255, 255, 0.05);
+  --color-text-primary: #f5f4f8;
+  --color-text-secondary: #b3aec5;
+  --color-text-muted: #78738a;
+  --color-success: #10b981;
+  --color-success-glow: rgba(16, 185, 129, 0.15);
+  --color-error: #ef4444;
+  --color-error-glow: rgba(239, 68, 68, 0.15);
+  --color-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  font-family: 'Outfit', 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e1436 0%, var(--color-bg-primary) 70%);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Utilities for things Tailwind doesn't do natively easily */
+@layer utilities {
+  .glass {
+    @apply bg-bg-secondary backdrop-blur-xl border border-border;
+  }
+  
+  .glass-card {
+    @apply bg-bg-tertiary border border-border rounded-2xl;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Custom Animations */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes typing {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-4px); }
+}
+
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rotate-conic {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-message-in {
+  animation: message-in 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.animate-typing {
+  animation: typing 1.4s infinite;
+}
+
+.animate-rotate-conic {
+  animation: rotate-conic 4s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out forwards;
+}

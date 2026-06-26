@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayu — Kapruka AI Shopping Agent</title>
+  <meta name="description" content="Immersive AI-powered conversational shopping agent for Kapruka.com. Search, select, quote delivery, and checkout guest orders." />
+  <link rel="icon" href="https://www.kapruka.com/favicon.ico" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Main Chat Window (Left Side) -->
+    <main class="chat-section">
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="brand-info">
+          <div class="logo-wrapper">
+            <img src="https://www.kapruka.com/static/image/logo.jpg?v2" alt="Kapruka Logo" class="brand-logo" />
+            <div class="logo-badge">AI</div>
+          </div>
+          <div class="brand-text">
+            <h1>Ayu <span class="status-dot"></span></h1>
+            <p>Kapruka Personal Shopper</p>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <button id="toggle-sidebar-btn" class="icon-btn" title="Toggle Cart & Checkout">
+            <span class="btn-icon">🛒</span>
+            <span id="cart-badge-count" class="badge">0</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat History -->
+      <div id="chat-messages" class="chat-messages">
+        <!-- Messages will be dynamically appended here -->
+        <div class="message assistant-message message-fade">
+          <div class="message-content">
+            <p><strong>Ayubowan!</strong> 🙏 I am <strong>Ayu</strong>, your Kapruka shopping assistant. I can help you find products, calculate delivery costs, and guide you all the way through guest checkout. What are you looking to shop for today?</p>
+            <div class="suggestion-chips">
+              <button class="chip" onclick="sendSuggestion('Recommend a chocolate cake for a birthday')">🎂 Birthday Cakes</button>
+              <button class="chip" onclick="sendSuggestion('Show me anniversary chocolates')">🍫 Anniversary Chocolates</button>
+              <button class="chip" onclick="sendSuggestion('Find beautiful fresh flowers')">💐 Fresh Flowers</button>
+              <button class="chip" onclick="sendSuggestion('How can I track my order?')">🔍 Track Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <footer class="chat-input-area">
+        <div id="typing-indicator" class="typing-indicator hidden">
+          <span></span><span></span><span></span> Ayu is checking Kapruka...
+        </div>
+        <form id="chat-form" class="chat-input-form">
+          <input type="text" id="chat-input" placeholder="Ask Ayu to find cakes, chocolates, flowers..." autocomplete="off" required />
+          <button type="submit" class="send-btn" id="send-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+          </button>
+        </form>
+      </footer>
+    </main>
+
+    <!-- Cart & Checkout Sidebar (Right Side) -->
+    <aside id="sidebar-panel" class="sidebar-panel">
+      <div class="sidebar-header">
+        <h2>Shopping Cart & Delivery</h2>
+        <button id="close-sidebar-btn" class="close-btn">&times;</button>
+      </div>
+
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" data-tab="cart-tab">Cart & Quote</button>
+        <button class="tab-btn" data-tab="checkout-tab">Guest Checkout</button>
+        <button class="tab-btn" data-tab="track-tab">Track Order</button>
+      </div>
+
+      <!-- Tab Content: Cart & Quote -->
+      <div id="cart-tab" class="tab-content active">
+        <!-- Cart Items -->
+        <div class="section-card">
+          <h3>Items in Cart</h3>
+          <div id="cart-items-list" class="cart-items-list">
+            <div class="empty-cart-message">Your cart is empty. Ask Ayu to find products for you!</div>
+          </div>
+          <div class="cart-summary">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="cart-subtotal">LKR 0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Cost:</span>
+              <span id="cart-delivery-cost">LKR 0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total:</span>
+              <span id="cart-total">LKR 0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Quote Calculator -->
+        <div class="section-card">
+          <h3>Calculate Delivery</h3>
+          <div class="form-group">
+            <label for="delivery-city-input">Delivery City:</label>
+            <div class="autocomplete-wrapper">
+              <input type="text" id="delivery-city-input" placeholder="Type city (e.g. Colombo 03, Kandy)" autocomplete="off" />
+              <div id="city-autocomplete-list" class="autocomplete-items"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="delivery-date-input">Delivery Date:</label>
+            <input type="date" id="delivery-date-input" />
+          </div>
+          <button id="check-delivery-btn" class="primary-btn">Calculate Delivery Rate</button>
+          <div id="delivery-status-box" class="delivery-status-box hidden"></div>
+        </div>
+
+        <button id="proceed-checkout-btn" class="checkout-action-btn" disabled>Proceed to Checkout</button>
+      </div>
+
+      <!-- Tab Content: Guest Checkout -->
+      <div id="checkout-tab" class="tab-content">
+        <form id="checkout-form" class="checkout-form">
+          <div class="section-card">
+            <h3>1. Recipient Details</h3>
+            <div class="form-group">
+              <label for="recipient-name">Full Name:*</label>
+              <input type="text" id="recipient-name" required placeholder="Name of person receiving the gift" />
+            </div>
+            <div class="form-group">
+              <label for="recipient-phone">Phone Number:*</label>
+              <input type="tel" id="recipient-phone" required placeholder="e.g. 0771234567" />
+            </div>
+            <div class="form-group">
+              <label for="recipient-address">Delivery Address:*</label>
+              <input type="text" id="recipient-address" required placeholder="Street address, apartment, house number" />
+            </div>
+            <div class="form-group">
+              <label for="recipient-city-display">Delivery City:*</label>
+              <input type="text" id="recipient-city-display" readonly placeholder="Selected on Cart page" />
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h3>2. Sender & Message Details</h3>
+            <div class="form-group">
+              <label for="sender-name">Your Name:*</label>
+              <input type="text" id="sender-name" required placeholder="Your name (shown on gift card)" />
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="sender-anonymous" />
+              <label for="sender-anonymous">Send anonymously</label>
+            </div>
+            <div class="form-group">
+              <label for="gift-message">Gift Card Message (Optional):</label>
+              <textarea id="gift-message" placeholder="Add a sweet message on the Kapruka card..." rows="3"></textarea>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-checkout-btn" class="checkout-action-btn">Create Guest Order & Pay</button>
+        </form>
+
+        <!-- Order Created Ticket (Hidden by default) -->
+        <div id="order-created-ticket" class="section-card order-ticket-card hidden animate-pulse">
+          <div class="ticket-header">
+            <span class="ticket-badge">UNPAID GUEST ORDER</span>
+            <h4>Order Reference Created!</h4>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-row">
+              <span>Order Reference:</span>
+              <strong id="ticket-ref">-</strong>
+            </div>
+            <div class="ticket-row">
+              <span>Total Price:</span>
+              <strong id="ticket-total">-</strong>
+            </div>
+            <p class="ticket-warning">Note: Prices are locked for 60 minutes. Click below to pay and confirm delivery.</p>
+            <a href="#" id="ticket-pay-btn" target="_blank" class="pay-btn">Proceed to Secure Payment ➔</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Track Order -->
+      <div id="track-tab" class="tab-content">
+        <div class="section-card">
+          <h3>Track Existing Order</h3>
+          <p class="small-text">Enter your final Kapruka Order Number (received via email after payment) to track delivery progress.</p>
+          <div class="form-group">
+            <label for="track-order-input">Order Number:</label>
+            <input type="text" id="track-order-input" placeholder="e.g. VIMP34456CB2" />
+          </div>
+          <button id="track-order-btn" class="primary-btn">Track Order Progress</button>
+        </div>
+
+        <div id="track-results-container" class="track-results-container hidden">
+          <!-- Tracking results will be dynamically inserted here -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+
+
+  <!-- Main JavaScript App -->
+  <script src="app.js"></script>
+</body>
+</html>
